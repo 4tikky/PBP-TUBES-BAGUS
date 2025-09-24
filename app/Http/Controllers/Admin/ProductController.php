@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+<<<<<<< HEAD
 use App\Models\Product;
 use App\Models\Category;
+=======
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
 
 class ProductController extends Controller
 {
@@ -16,8 +19,12 @@ class ProductController extends Controller
      */
     public function index()
     {
+<<<<<<< HEAD
         $products = Product::with('category')->latest()->paginate(10);
         return view('admin.products.index', compact('products'));
+=======
+        //
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
     }
 
     /**
@@ -27,8 +34,12 @@ class ProductController extends Controller
      */
     public function create()
     {
+<<<<<<< HEAD
         $categories = Category::all();
         return view('admin.products.create', compact('categories'));
+=======
+        //
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
     }
 
     /**
@@ -39,6 +50,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+<<<<<<< HEAD
         // 1. Validasi data (termasuk file gambar)
         $request->validate([
             'name'        => 'required|string|max:255',
@@ -66,6 +78,9 @@ class ProductController extends Controller
 
         // 5. Redirect dengan pesan sukses
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
+=======
+        //
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
     }
 
     /**
@@ -85,10 +100,16 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+<<<<<<< HEAD
     public function edit(Product $product)
     {
         $categories = Category::all();
         return view('admin.products.edit', compact('product', 'categories'));
+=======
+    public function edit($id)
+    {
+        //
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
     }
 
     /**
@@ -98,6 +119,7 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+<<<<<<< HEAD
     public function update(Request $request, Product $product)
     {
         $request->validate([
@@ -110,6 +132,11 @@ class ProductController extends Controller
         $product->update($request->all());
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
+=======
+    public function update(Request $request, $id)
+    {
+        //
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
     }
 
     /**
@@ -118,9 +145,15 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+<<<<<<< HEAD
     public function destroy(Product $product)
     {
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus!');
+=======
+    public function destroy($id)
+    {
+        //
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
     }
 }

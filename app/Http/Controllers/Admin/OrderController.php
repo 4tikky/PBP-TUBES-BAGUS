@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+<<<<<<< HEAD
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -32,3 +33,11 @@ class OrderController extends Controller
         return back()->with('success', "Status Pesanan #{$order->id} berhasil diperbarui!");
     }
 }
+=======
+use Illuminate\Http\Request;
+
+class OrderController extends Controller
+{
+    //
+}
+>>>>>>> 3d2645c96213ea7fe89bd5755cb38294b4cc4e5c
