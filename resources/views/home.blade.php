@@ -1,47 +1,122 @@
-@extends('layouts.app')
+<x-guest-layout>
+    {{-- Hero Section --}}
+    <section class="relative bg-gradient-to-r from-blue-500 to-blue-600 text-white py-20 mb-12 overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-4 animate-fade-in">
+                Selamat Datang di <span class="inline-block bg-white text-blue-600 px-4 py-2 rounded-lg shadow-md transform -rotate-2">
+                    Gerai Kita </span>
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Temukan sembako berkualitas dengan harga bersahabat. </br>Belanja di sini, dukung ekonomi lokal!
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#katalog" class="bg-white text-blue-600 font-semibold py-3 px-8 rounded-full hover:bg-blue-50 transition duration-300 shadow-lg">
+                    Lihat Katalog
+                </a>
+                <a href="{{ route('about') }}" class="border-2 border-white text-white font-semibold py-3 px-8 rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
+                    Tentang Kami
+                </a>
+            </div>
+        </div>
+        {{-- Background Pattern --}}
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white opacity-10 rounded-full -mr-48 mt-12"></div>
+    </section>
 
-@section('title', 'Katalog Produk')
+    {{-- Fitur Pencarian yang Dipercantik --}}
+    <section id="katalog" class="mb-12 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Katalog Produk UMKM</h2>
+            <p class="text-gray-600">Cari sembako, jajanan, dan kerajinan favoritmu dengan mudah!</p>
+        </div>
 
-@section('content')
-<div class="text-center mb-10">
-    <h1 class="text-4xl font-bold text-gray-900">Katalog Produk</h1>
-    <p class="text-gray-600 mt-2">Temukan produk UMKM terbaik di sini.</p>
-</div>
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <form action="/" method="GET" class="flex flex-col lg:flex-row gap-4 items-end">
+                {{-- Input Search dengan Icon --}}
+                <div class="relative flex-1">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" name="search" placeholder="Cari produk, misal: beras atau kue..." 
+                           class="w-full pl-10 pr-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" 
+                           value="{{ request('search') }}">
+                </div>
 
-{{-- Fitur Pencarian --}}
-<div class="mb-8 max-w-2xl mx-auto">
-    <form action="/" method="GET" class="flex flex-col sm:flex-row gap-4">
-        <input type="text" name="search" placeholder="Cari produk..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <select name="category" class="w-full sm:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">Semua Kategori</option>
-            {{-- Contoh kategori, data ini akan diambil dari DB --}}
-            <option value="makanan">Makanan</option>
-            <option value="minuman">Minuman</option>
-            <option value="kerajinan">Kerajinan</option>
-        </select>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Cari</button>
-    </form>
-</div>
+                {{-- Select Kategori --}}
+                <select name="category" class="w-full lg:w-48 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                    <option value="">Semua Kategori</option>
+                    {{-- Ambil dari DB nanti: @foreach($categories as $cat) --}}
+                    <option value="sembako" {{ request('category') == 'sembako' ? 'selected' : '' }}>Sembako</option>
+                    <option value="jajanan" {{ request('category') == 'jajanan' ? 'selected' : '' }}>Jajanan</option>
+                    <option value="minuman" {{ request('category') == 'minuman' ? 'selected' : '' }}>Minuman</option>
+                    <option value="kerajinan" {{ request('category') == 'kerajinan' ? 'selected' : '' }}>Kerajinan</option>
+                </select>
 
-{{-- Daftar Produk --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-    {{-- Contoh data produk, ini akan di-loop dari database --}}
-    @for ($i = 1; $i <= 8; $i++)
-    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-        <img src="https://placehold.co/600x400/e2e8f0/333?text=Produk+{{$i}}" alt="Gambar Produk" class="w-full h-48 object-cover">
-        <div class="p-6">
-            <span class="text-sm text-gray-500">Kategori Produk</span>
-            <h3 class="text-xl font-bold mt-1 mb-2">Nama Produk {{ $i }}</h3>
-            <p class="text-lg font-semibold text-blue-600 mb-4">Rp 50.000</p>
-            <form action="/cart/add" method="POST">
-                @csrf
-                <input type="hidden" name="product_id" value="{{ $i }}">
-                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-300">
-                    + Tambah ke Keranjang
+                {{-- Select Sorting --}}
+                <select name="sort" class="w-full lg:w-32 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                    <option value="">Urutkan</option>
+                    <option value="price_asc">Harga Terendah</option>
+                    <option value="price_desc">Harga Tertinggi</option>
+                    <option value="name">Nama A-Z</option>
+                </select>
+
+                <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Cari
                 </button>
             </form>
         </div>
-    </div>
-    @endfor
-</div>
-@endsection
+    </section>
+
+    {{-- Daftar Produk --}}
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {{-- Loop Produk: Ganti dengan @foreach($products as $product) nanti --}}
+            @for ($i = 1; $i <= 8; $i++)
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in group">
+                {{-- Gambar Produk --}}
+                <div class="relative h-48 bg-blue-50">
+                    <img src="https://placehold.co/400x300/blue/white?text=Produk+{{ $i }}+%28Sembako%29" 
+                         alt="Produk {{ $i }} - Sembako segar dari UMKM lokal" 
+                         class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300">
+                    {{-- Badge Promo/Stok --}}
+                    <span class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">Stok Tersedia</span>
+                </div>
+
+                <div class="p-5">
+                    <span class="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full mb-2">Sembako</span>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">Produk Segar {{ $i }} - Kualitas Terbaik</h3>
+                    <p class="text-sm text-gray-600 mb-3 line-clamp-2">Deskripsi singkat: Barang berkualitas dari UMKM lokal, cocok untuk kebutuhan harian Anda.</p>
+                    <p class="text-xl font-bold text-blue-600 mb-4">Rp {{ number_format(50000 + ($i * 5000), 0, ',', '.') }}</p>
+                    
+                    {{-- Form Tambah Keranjang --}}
+                    <form action="/cart/add" method="POST" class="space-y-2">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $i }}">
+                        <button type="submit" 
+                                class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group-hover:scale-105">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l-1.5-1.5M16 13l-1.5-1.5M16 13l1.5-1.5"></path>
+                            </svg>
+                            + Tambah ke Keranjang
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endfor
+        </div>
+
+        {{-- Pagination --}}
+        <div class="mt-12 flex justify-center">
+            <nav class="flex space-x-2">
+                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">Sebelumnya</button>
+                <button class="px-4 py-2 bg-white border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition duration-300">1</button>
+                <button class="px-4 py-2 bg-white border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition duration-300">2</button>
+                <button class="px-4 py-2 bg-white border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition duration-300">3</button>
+                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">Selanjutnya</button>
+            </nav>
+        </div>
+    </section>
+</x-guest-layout>

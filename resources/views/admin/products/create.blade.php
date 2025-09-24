@@ -1,53 +1,71 @@
-@extends('layouts.app')
+<x-admin-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Tambah Produk Baru') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Tambah Produk Baru')
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    {{-- Form untuk error handling jika ada --}}
+                    @if ($errors->any())
+                        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                            <strong class="font-bold">Oops!</strong>
+                            <span class="block sm:inline">Ada beberapa masalah dengan input Anda.</span>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-@section('content')
-<h1 class="text-3xl font-bold mb-6">Tambah Produk Baru</h1>
+                    <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
+                        @csrf
 
-<div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
-    <form action="/admin/products" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="mb-4">
-            <label for="name" class="block text-gray-700 font-semibold mb-2">Nama Produk</label>
-            <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-                <label for="category_id" class="block text-gray-700 font-semibold mb-2">Kategori</label>
-                <select id="category_id" name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <option value="">Pilih Kategori</option>
-                    {{-- Loop dari DB categories --}}
-                    <option value="1">Makanan</option>
-                    <option value="2">Minuman</option>
-                </select>
+                        <div>
+                            <label for="name" class="block font-medium text-sm text-gray-700">Nama Produk</label>
+                            <input id="name" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" type="text" name="name" value="{{ old('name') }}" required autofocus />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="price" class="block font-medium text-sm text-gray-700">Harga</label>
+                            <input id="price" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" type="number" name="price" value="{{ old('price') }}" required />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="stock" class="block font-medium text-sm text-gray-700">Stok</label>
+                            <input id="stock" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" type="number" name="stock" value="{{ old('stock') }}" required />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="category_id" class="block font-medium text-sm text-gray-700">Kategori</label>
+                            <select id="category_id" name="category_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="image" class="block font-medium text-sm text-gray-700">Foto Produk</label>
+                            <input id="image" name="image" type="file" class="block mt-1 w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100" />
+                        </div>
+                        <div class="flex items-center justify-end mt-4">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                                Simpan Produk
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div>
-                 <label for="price" class="block text-gray-700 font-semibold mb-2">Harga</label>
-                <input type="number" id="price" name="price" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-            </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-             <div>
-                <label for="stock" class="block text-gray-700 font-semibold mb-2">Stok</label>
-                <input type="number" id="stock" name="stock" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-            </div>
-             <div>
-                <label for="is_active" class="block text-gray-700 font-semibold mb-2">Status</label>
-                <select id="is_active" name="is_active" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <option value="1">Aktif</option>
-                    <option value="0">Tidak Aktif</option>
-                </select>
-            </div>
-        </div>
-         <div class="mb-6">
-            <label for="image" class="block text-gray-700 font-semibold mb-2">Gambar Produk</label>
-            <input type="file" id="image" name="image" class="w-full text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
-        </div>
-        <div class="flex justify-end">
-            <a href="/admin/products" class="text-gray-600 py-2 px-4 mr-2">Batal</a>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">Simpan Produk</button>
-        </div>
-    </form>
-</div>
-@endsection
+    </div>
+</x-admin-layout>

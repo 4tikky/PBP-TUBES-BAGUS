@@ -1,0 +1,1 @@
+<img src="{{ asset('images/Logo_GK.png') }}" {{ $attributes }}>
