@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+        
+        .checkout-header {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1a202c;
+            text-align: center;
+        }
+
+        .checkout-layout {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .customer-details {
+            flex: 2;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+        }
+        
+        .order-summary {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            position: sticky;
+            top: 24px;
+        }
+
+        .form-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .summary-total {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .place-order-btn {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 24px;
+        }
+
+        .place-order-btn:hover {
+            background-color: #0b5ed7;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-layout {
+                flex-direction: column;
+            }
+            .order-summary {
+                position: static;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="checkout-header">📦 Checkout</h1>
+        <div class="checkout-layout">
+
+            <div class="customer-details">
+                <h2 class="form-section-title">Informasi Kontak & Pengiriman</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="nama-lengkap">Nama Lengkap</label>
+                        <input type="text" id="nama-lengkap" name="nama-lengkap" placeholder="Masukkan nama lengkap Anda" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Alamat Email</label>
+                        <input type="email" id="email" name="email" placeholder="contoh@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telepon">Nomor Telepon</label>
+                        <input type="tel" id="telepon" name="telepon" placeholder="081234567890" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alamat">Alamat Lengkap</label>
+                        <textarea id="alamat" name="alamat" placeholder="Masukkan nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan" required></textarea>
+                    </div>
+
+                    <h2 class="form-section-title" style="margin-top: 24px;">Metode Pengiriman</h2>
+                    <div class="form-group">
+                        <label for="pengiriman">Pilih Jasa Pengiriman</label>
+                        <select id="pengiriman" name="pengiriman">
+                            <option value="10000" selected>Reguler (Estimasi 2-3 hari) - Rp 10.000</option>
+                            <option value="20000">Express (Estimasi 1 hari) - Rp 20.000</option>
+                            <option value="30000">Kargo (Estimasi 3-5 hari) - Rp 30.000</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <h2 class="summary-title">Ringkasan Pesanan</h2>
+                <div class="summary-item">
+                    <span>Subtotal (2 item)</span>
+                    <span id="subtotal-amount" data-value="175000">Rp 175.000</span>
+                </div>
+                <div class="summary-item">
+                    <span>Biaya Pengiriman</span>
+                    <span id="shipping-cost">Rp 10.000</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total Pembayaran</span>
+                    <span id="total-payment">Rp 185.000</span>
+                </div>
+                
+                <button class="place-order-btn">Buat Pesanan & Bayar</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // 1. Pilih elemen HTML yang dibutuhkan
+    const shippingSelect = document.getElementById('pengiriman');
+    const subtotalElement = document.getElementById('subtotal-amount');
+    const shippingCostElement = document.getElementById('shipping-cost');
+    const totalPaymentElement = document.getElementById('total-payment');
+
+    // 2. Fungsi untuk memformat angka menjadi format Rupiah
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(angka).replace('IDR', 'Rp');
+    }
+
+    // 3. Fungsi untuk mengupdate total harga
+    function updateSummary() {
+        // Ambil nilai subtotal (dari atribut data-value) dan ubah ke angka
+        const subtotal = parseInt(subtotalElement.dataset.value);
+
+        // Ambil nilai biaya pengiriman yang dipilih dan ubah ke angka
+        const shippingCost = parseInt(shippingSelect.value);
+
+        // Hitung total pembayaran baru
+        const total = subtotal + shippingCost;
+
+        // Tampilkan biaya pengiriman dan total yang baru dengan format Rupiah
+        shippingCostElement.textContent = formatRupiah(shippingCost);
+        totalPaymentElement.textContent = formatRupiah(total);
+    }
+
+    // 4. Tambahkan 'event listener' ke dropdown pengiriman
+    // Fungsi updateSummary() akan berjalan setiap kali pengguna mengubah pilihan
+    shippingSelect.addEventListener('change', updateSummary);
+
+</script>
+
+</body>
+</html>
