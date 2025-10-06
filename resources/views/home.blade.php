@@ -73,28 +73,29 @@
     {{-- Daftar Produk --}}
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {{-- Loop Produk: Ganti dengan @foreach($products as $product) nanti --}}
-            @for ($i = 1; $i <= 8; $i++)
+            {{-- Loop Produk Dinamis --}}
+            @foreach ($products as $product)
             <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in group">
                 {{-- Gambar Produk --}}
                 <div class="relative h-48 bg-blue-50">
-                    <img src="https://placehold.co/400x300/blue/white?text=Produk+{{ $i }}+%28Sembako%29" 
-                         alt="Produk {{ $i }} - Sembako segar dari UMKM lokal" 
+                    <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300/blue/white?text=Produk' }}" 
+                         alt="{{ $product->name }}" 
                          class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300">
-                    {{-- Badge Promo/Stok --}}
-                    <span class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">Stok Tersedia</span>
+                    <span class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                        {{ $product->stock > 0 ? 'Stok Tersedia' : 'Stok Habis' }}
+                    </span>
                 </div>
-
                 <div class="p-5">
-                    <span class="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full mb-2">Sembako</span>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">Produk Segar {{ $i }} - Kualitas Terbaik</h3>
-                    <p class="text-sm text-gray-600 mb-3 line-clamp-2">Deskripsi singkat: Barang berkualitas dari UMKM lokal, cocok untuk kebutuhan harian Anda.</p>
-                    <p class="text-xl font-bold text-blue-600 mb-4">Rp {{ number_format(50000 + ($i * 5000), 0, ',', '.') }}</p>
-                    
+                    <span class="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full mb-2">
+                        {{ $product->category->name ?? '-' }}
+                    </span>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{{ $product->name }}</h3>
+                    <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ $product->description }}</p>
+                    <p class="text-xl font-bold text-blue-600 mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
                     {{-- Form Tambah Keranjang --}}
                     <form action="/cart/add" method="POST" class="space-y-2">
                         @csrf
-                        <input type="hidden" name="product_id" value="{{ $i }}">
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <button type="submit" 
                                 class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group-hover:scale-105">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +106,7 @@
                     </form>
                 </div>
             </div>
-            @endfor
+            @endforeach
         </div>
 
         {{-- Pagination --}}

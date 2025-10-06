@@ -17,6 +17,10 @@ use App\Http\Controllers\Admin\CustomerController;
 // Ubah rute '/' menjadi seperti ini
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+    ->name('login');
+
 // Rute untuk Admin
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {

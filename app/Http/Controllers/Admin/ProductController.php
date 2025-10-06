@@ -105,9 +105,18 @@ class ProductController extends Controller
             'price' => 'required|integer|min:0',
             'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // tambahkan validasi image
         ]);
 
-        $product->update($request->all());
+        // Update data selain gambar
+        $product->update($request->only(['name', 'price', 'stock', 'category_id']));
+
+        // Jika ada gambar baru di-upload
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $product->image = $path;
+            $product->save(); // <-- WAJIB agar path gambar tersimpan!
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
     }

@@ -12,11 +12,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $products = \App\Models\Product::with('category')
-                                        ->where('is_active', true)
-                                        ->latest()
-                                        ->paginate(12);
-        
+        // $products = \App\Models\Product::with('category')
+        //                                 ->where('is_active', true)
+        //                                 ->latest()
+        //                                 ->paginate(12);
+        $products = Product::all();
         return view('home', compact('products'));
     }
 }
