@@ -19,7 +19,7 @@
     <body class="font-sans antialiased bg-gray-100">
         <div class="flex min-h-screen">
             <aside class="w-64 bg-blue-800 text-white p-6 fixed h-full shadow-lg hidden md:block">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center mb-10">
+                <a href="{{ route('home') }}" class="flex items-center mb-10">
                     <x-application-logo class="block h-10 w-auto fill-current text-white" />
                     <span class="ml-3 font-bold text-xl">Gerai Kita</span>
                 </a>
@@ -95,7 +95,9 @@
                                     </button>
                                 </x-slot>
                                 <x-slot name="content">
-                                    <x-dropdown-link :href="route('profile.edit')">{{ __('Profile') }}</x-dropdown-link>
+                                    @if (Route::has('profile.edit'))
+                                        <x-dropdown-link :href="route('profile.edit')">{{ __('Profile') }}</x-dropdown-link>
+                                    @endif
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">

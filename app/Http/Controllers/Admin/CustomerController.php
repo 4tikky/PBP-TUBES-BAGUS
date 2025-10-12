@@ -15,4 +15,9 @@ class CustomerController extends Controller
 
         return view('admin.customers.index', compact('customers'));
     }
+
+    public function show($id)
+    {
+        return view('admin.customers.show', compact('id'));
+    }
 }

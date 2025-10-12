@@ -3,107 +3,76 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-                    @auth
-                        @if (auth()->user()->role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}">
-                                <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                            </a>
-                        @else
-                            <a href="{{ route('buyer.dashboard') }}">
-                                <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                            </a>
-                        @endif
-                    @else
-                        <a href="{{ route('home') }}">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                        </a>
-                    @endauth
-                </div>
-
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    @auth
-                        @if (auth()->user()->role === 'admin')
-                            <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                                {{ __('Dashboard Admin') }}
-                            </x-nav-link>
-                        @else
-                            <x-nav-link :href="route('buyer.dashboard')" :active="request()->routeIs('buyer.dashboard')">
-                                {{ __('Dashboard') }}
-                            </x-nav-link>
-                        @endif
-                    @endauth
+                    <a href="{{ route('home') }}" class="text-lg font-semibold text-gray-800 dark:text-gray-100">GeraiKita</a>
                 </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 @auth
-                    {{-- Tampilkan nama user dan tombol logout --}}
-                    <span class="mr-4 text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="text-red-600 hover:underline">Logout</button>
-                    </form>
+                    <div class="relative">
+                        <details class="group">
+                            <summary class="list-none cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                                    {{ strtoupper(Str::of(Auth::user()->name)->substr(0,1)) }}
+                                </div>
+                                <span class="font-medium">{{ Auth::user()->name }}</span>
+                                <svg class="w-4 h-4 transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                                </svg>
+                            </summary>
+                            <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg p-1 z-50">
+                                @if (Auth::user()->role === 'admin')
+                                    <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</a>
+                                @else
+                                    <a href="{{ route('buyer.dashboard') }}" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</a>
+                                    <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Keranjang</a>
+                                @endif
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">Logout</button>
+                                </form>
+                            </div>
+                        </details>
+                    </div>
                 @else
-                    {{-- Tampilkan tombol login dan register jika belum login --}}
-                    <a href="{{ route('login') }}" class="text-sm text-blue-600 hover:underline mr-4">Log in</a>
+                    <a href="{{ route('login') }}" class="text-sm text-blue-600 hover:underline">Masuk</a>
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="text-sm text-blue-600 hover:underline">Register</a>
+                        <a href="{{ route('register') }}" class="ml-4 text-sm text-blue-600 hover:underline">Daftar</a>
                     @endif
                 @endauth
             </div>
 
             <div class="-mr-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="p-2 rounded-md text-gray-500 hover:bg-gray-100">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden px-4 pb-3">
         @auth
-            <div class="pt-2 pb-3 space-y-1">
-                @if (auth()->user()->role === 'admin')
-                    <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                        {{ __('Dashboard Admin') }}
-                    </x-responsive-nav-link>
-                @else
-                    <x-responsive-nav-link :href="route('buyer.dashboard')" :active="request()->routeIs('buyer.dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-responsive-nav-link>
-                @endif
+            <div class="py-3 border-t border-gray-200 dark:border-gray-700">
+                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
             </div>
-            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-                <div class="px-4">
-                    <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
-                    </x-responsive-nav-link>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                            {{ __('Log Out') }}
-                        </x-responsive-nav-link>
-                    </form>
-                </div>
-            </div>
+            @if (Auth::user()->role === 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 text-sm">Dashboard</a>
+            @else
+                <a href="{{ route('buyer.dashboard') }}" class="block px-3 py-2 text-sm">Dashboard</a>
+                <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-sm">Keranjang</a>
+            @endif
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="block w-full text-left px-3 py-2 text-sm text-red-600">Logout</button>
+            </form>
         @else
-            <div class="pt-2 pb-3 space-y-1">
-                <x-responsive-nav-link :href="route('login')">
-                    {{ __('Log in') }}
-                </x-responsive-nav-link>
-                @if (Route::has('register'))
-                    <x-responsive-nav-link :href="route('register')">
-                        {{ __('Register') }}
-                    </x-responsive-nav-link>
-                @endif
-            </div>
+            <a href="{{ route('login') }}" class="block px-3 py-2 text-sm">Masuk</a>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="block px-3 py-2 text-sm">Daftar</a>
+            @endif
         @endauth
     </div>
 </nav>

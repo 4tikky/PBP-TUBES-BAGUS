@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-app-layout>
     {{-- Hero Section --}}
     <section class="relative bg-gradient-to-r from-blue-500 to-blue-600 text-white py-20 mb-12 overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -96,6 +96,7 @@
                     <form action="/cart/add" method="POST" class="space-y-2">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        @auth
                         <button type="submit" 
                                 class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group-hover:scale-105">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,6 +104,11 @@
                             </svg>
                             + Tambah ke Keranjang
                         </button>
+                        @else
+                        <a href="{{ route('login') }}" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg text-center block transition duration-300 shadow-md hover:bg-blue-700">
+                            Masuk untuk Beli
+                        </a>
+                        @endauth
                     </form>
                 </div>
             </div>
@@ -120,4 +126,4 @@
             </nav>
         </div>
     </section>
-</x-guest-layout>
+</x-app-layout>
