@@ -113,6 +113,12 @@
                 </div>
             </div>
 
+            <div class="mt-4">
+                @if (method_exists($orders, 'links'))
+                    {{ $orders->links() }}
+                @endif
+            </div>
+
         </div>
     </div>
 </x-app-layout>
