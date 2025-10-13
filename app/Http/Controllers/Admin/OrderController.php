@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Order;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -13,7 +13,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('user')->latest()->paginate(10);
+        $orders = Order::with(['user'])->withCount('items')->latest()->paginate(15);
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -23,7 +23,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['user']);
+        $order->load(['user', 'items.product']);
 
         return view('admin.orders.show', compact('order'));
     }
@@ -37,7 +37,7 @@ class OrderController extends Controller
             'status' => 'required|in:diproses,dikirim,selesai,batal',
         ]);
 
-        $order->update(['status' => $data['status']]);
+        $order->update($data);
 
         return back()->with('success', 'Status pesanan diperbarui.');
     }

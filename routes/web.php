@@ -6,10 +6,11 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Buyer\DashboardController as BuyerDashboardController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Buyer\OrderController as BuyerOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,18 +43,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Rute untuk Pembeli (user)
+Route::prefix('buyer')->name('buyer.')->middleware(['auth','role:user'])->group(function () {
+    Route::get('/dashboard', [BuyerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/orders', [BuyerOrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [BuyerOrderController::class, 'show'])->name('orders.show');
+});
+
 // Rute untuk Admin
 
 Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('products', ProductController::class); // -> admin.products.index,create,store,…
-    Route::resource('orders', OrderController::class)->only(['index','show','update']); // tambahkan update
+    Route::resource('orders', AdminOrderController::class)->only(['index','show','update']); // tambahkan update
     Route::resource('customers', CustomerController::class)->only(['index','show']);   // opsional, sesuai sidebar
-});
-
-// Rute untuk Pembeli (user)
-Route::middleware(['auth', 'role:user'])->prefix('buyer')->group(function () {
-    Route::get('/dashboard', [BuyerDashboardController::class, 'index'])->name('buyer.dashboard');
 });
 
 require __DIR__.'/auth.php';
