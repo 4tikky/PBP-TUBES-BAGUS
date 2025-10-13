@@ -30,11 +30,16 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        if ($user->role === 'admin') {
+        if ($user && $user->role === 'admin') {
             return redirect()->route('admin.dashboard');
-        } else {
+        }
+
+        if ($user && $user->role === 'user') {
             return redirect()->route('buyer.dashboard');
         }
+
+        // Fallback bila role tidak dikenali agar tidak terkena 403 dari middleware
+        return redirect('/');
 
        // return redirect()->intended(RouteServiceProvider::HOME);
     }

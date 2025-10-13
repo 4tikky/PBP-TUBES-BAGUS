@@ -23,7 +23,19 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                $user = Auth::guard($guard)->user();
+
+                // Arahkan sesuai peran untuk menghindari 403 pada middleware role
+                if ($user && $user->role === 'admin') {
+                    return redirect()->route('admin.dashboard');
+                }
+
+                if ($user && $user->role === 'user') {
+                    return redirect()->route('buyer.dashboard');
+                }
+
+                // Fallback jika role tidak dikenali
+                return redirect('/');
             }
         }
 
