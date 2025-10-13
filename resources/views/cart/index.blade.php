@@ -23,6 +23,19 @@
         .checkout-btn:hover { background-color: #0b5ed7; }
         .empty { text-align: center; padding: 48px 12px; }
         .empty a { display: inline-block; margin-top: 16px; background-color: #0d6efd; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; }
+
+        /* Modal confirm (tema biru) */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 50; }
+        .modal-overlay.show { display: flex; }
+        .modal-card { width: 100%; max-width: 440px; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.2); overflow: hidden; }
+        .modal-header { padding: 16px 20px; background: #0d6efd; color: #fff; font-weight: 600; }
+        .modal-body { padding: 18px 20px; color: #1a202c; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 20px; background: #f8fafc; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 14px; border: 1px solid transparent; cursor: pointer; }
+        .btn-secondary { background: #e9f0ff; color: #1e40af; border-color: #c7dbff; }
+        .btn-secondary:hover { background: #dbe8ff; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-danger:hover { background: #c92f3d; }
     </style>
 
     <div class="cart-container">
@@ -65,10 +78,15 @@
 
                     <p class="product-subtotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</p>
 
-                    <form method="POST" action="{{ route('cart.remove', $item) }}">
+                    <form method="POST" action="{{ route('cart.remove', ['item' => $item->id]) }}" class="delete-item-form">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="remove-btn" title="Hapus">&times;</button>
+                        <button type="button"
+                                class="inline-flex items-center px-3 py-1.5 rounded bg-red-600 text-white hover:bg-red-700 text-sm btn-delete-item"
+                                data-product="{{ $item->product->name }}"
+                                onclick="event.stopPropagation();">
+                            Hapus
+                        </button>
                     </form>
                 </div>
             @endforeach
@@ -93,6 +111,20 @@
         @endif
     </div>
 
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="confirmModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal-card">
+            <div class="modal-header" id="confirmTitle">Konfirmasi Hapus</div>
+            <div class="modal-body">
+                <p id="confirmText">Apakah Anda yakin ingin menghapus produk ini dari keranjang?</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDelete">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Hapus</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.querySelectorAll('.quantity-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -109,5 +141,55 @@
                 form.submit();
             });
         });
+
+        // Cegah bubble pada tombol qty juga (kalau baris bisa diklik/link)
+        document.querySelectorAll('.quantity-btn, .quantity-input').forEach(el=>{
+            el.addEventListener('click', e => e.stopPropagation());
+        });
+
+        // Modal confirm delete (custom)
+        (function(){
+            let pendingForm = null;
+
+            const modal = document.getElementById('confirmModal');
+            const text  = document.getElementById('confirmText');
+            const btnConfirm = document.getElementById('confirmDelete');
+            const btnCancel  = document.getElementById('cancelDelete');
+
+            function openModal(message, form) {
+                pendingForm = form;
+                text.textContent = message;
+                modal.classList.add('show');
+            }
+            function closeModal() {
+                modal.classList.remove('show');
+                pendingForm = null;
+            }
+
+            document.querySelectorAll('.btn-delete-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const form = btn.closest('form');
+                    const name = btn.getAttribute('data-product') || 'produk ini';
+                    openModal(`Apakah Anda yakin ingin menghapus "${name}" dari keranjang?`, form);
+                });
+            });
+
+            btnCancel.addEventListener('click', closeModal);
+            btnConfirm.addEventListener('click', () => {
+                if (pendingForm) pendingForm.submit();
+            });
+
+            // Tutup modal jika klik di luar card
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            // Esc untuk menutup
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+            });
+        })();
     </script>
 </x-app-layout>

@@ -84,10 +84,13 @@ class CartController extends Controller
      * @param  Cart  $cart
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function remove(Cart $cart)
+    public function remove(Request $request, \App\Models\Cart $item)
     {
-        if ($cart->user_id !== auth()->id()) abort(403);
-        $cart->delete();
-        return back()->with('success', 'Item dihapus');
+        if ($item->user_id !== auth()->id()) {
+            return back()->with('error', 'Item bukan milik Anda.');
+        }
+
+        $item->delete();
+        return back()->with('success', 'Item keranjang dihapus.');
     }
 }

@@ -1,16 +1,19 @@
 <x-guest-layout>
+    {{-- Navbar sama seperti halaman lain --}}
+    @include('layouts.navigation')
+
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Header Halaman --}}
-            <div class="text-center mb-16 animate-fade-in">
+            <!-- <div class="text-center mb-16 animate-fade-in">
                 <h1 class="text-4xl md:text-5xl font-extrabold text-blue-900">
                     Tentang Gerai Kita
                 </h1>
                 <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
                     Misi kami adalah memberdayakan UMKM lokal dengan menyediakan platform digital untuk menjangkau lebih banyak pelanggan.
                 </p>
-            </div>
+            </div> -->
 
             {{-- Bagian Misi Kami --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
