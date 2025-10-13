@@ -17,7 +17,7 @@ class OrderController extends Controller
         return view('buyer.orders.index', compact('orders'));
     }
 
-    public function show(Order $order)
+    public function show(\App\Models\Order $order)
     {
         abort_unless($order->user_id === auth()->id(), 403);
         $order->load(['items.product']);

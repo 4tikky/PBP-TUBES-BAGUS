@@ -97,7 +97,10 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->created_at->format('d M Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="#" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                            <a class="text-blue-600 hover:underline relative z-10"
+                                               href="{{ route('buyer.orders.show', ['order' => $order->id]) }}">
+                                                Detail
+                                            </a>
                                         </td>
                                     </tr>
                                 @empty

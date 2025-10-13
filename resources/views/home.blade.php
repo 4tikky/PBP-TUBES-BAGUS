@@ -93,23 +93,29 @@
                     <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ $product->description }}</p>
                     <p class="text-xl font-bold text-blue-600 mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
                     {{-- Form Tambah Keranjang --}}
-                    <form action="/cart/add" method="POST" class="space-y-2">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        @auth
-                        <button type="submit" 
-                                class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group-hover:scale-105">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l-1.5-1.5M16 13l-1.5-1.5M16 13l1.5-1.5"></path>
-                            </svg>
-                            + Tambah ke Keranjang
-                        </button>
-                        @else
-                        <a href="{{ route('login') }}" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg text-center block transition duration-300 shadow-md hover:bg-blue-700">
-                            Masuk untuk Beli
+                    @php
+                        // Kelas tombol versi awalmu (sesuaikan jika berbeda)
+                        $btnClass = 'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium';
+                    @endphp
+
+                    @if (!Auth::check())
+                        <a href="{{ route('login') }}" class="{{ $btnClass }}">
+                            Masuk untuk menambahkan
                         </a>
-                        @endauth
-                    </form>
+                    @elseif (Auth::user()->role !== 'admin')
+                        <form method="POST" action="{{ route('cart.add', ['product' => $product->getRouteKey()]) }}">
+                            @csrf
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="{{ $btnClass }}" aria-label="Tambah ke Keranjang">
+                                {{-- Ikon cart --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M3 3h2l.4 2M7 13h9l3-7H6.4M7 13L5.4 5M7 13l-2 9m2-9h10m0 0l-2 9M9 22a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
+                                </svg>
+                                Tambah ke Keranjang
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
             @endforeach

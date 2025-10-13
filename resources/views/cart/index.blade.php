@@ -84,6 +84,13 @@
                 {{-- Jika sudah punya route checkout.index, ini akan bekerja --}}
             </div>
         @endif
+
+        @if(session('error'))
+            <div class="mb-4 text-red-700 bg-red-100 px-4 py-2 rounded">{{ session('error') }}</div>
+        @endif
+        @if(session('success'))
+            <div class="mb-4 text-green-700 bg-green-100 px-4 py-2 rounded">{{ session('success') }}</div>
+        @endif
     </div>
 
     <script>

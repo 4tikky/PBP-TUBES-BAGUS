@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -39,44 +40,53 @@ class CheckoutController extends Controller
         $shipping = (int) $data['pengiriman'];
         $total    = $subtotal + $shipping;
 
-        DB::transaction(function () use ($userId, $data, $cartItems, $subtotal, $shipping, $total) {
-            $payload = [
-                'user_id'          => $userId,
-                'code'             => 'ORD-'.now()->format('YmdHis').Str::upper(Str::random(4)),
-                'receiver_name'    => $data['nama-lengkap'],
-                'email'            => $data['email'],
-                'phone'            => $data['telepon'],
-                'shipping_service' => $shipping === 10000 ? 'Reguler' : ($shipping === 20000 ? 'Express' : 'Kargo'),
-                'subtotal'         => $subtotal,
-                'shipping_cost'    => $shipping,
-                'total'            => $total,
-                'status'           => 'diproses',
-            ];
+        try {
+            DB::transaction(function () use ($userId, $data, $cartItems, $subtotal, $shipping, $total) {
+                $payload = [
+                    'user_id'          => $userId,
+                    'code'             => 'ORD-'.now()->format('YmdHis').Str::upper(Str::random(4)),
+                    'receiver_name'    => $data['nama-lengkap'],
+                    'email'            => $data['email'],
+                    'phone'            => $data['telepon'],
+                    'shipping_service' => $shipping === 10000 ? 'Reguler' : ($shipping === 20000 ? 'Express' : 'Kargo'),
+                    'subtotal'         => $subtotal,
+                    'shipping_cost'    => $shipping,
+                    'total'            => $total,
+                    'status'           => 'diproses',
+                ];
+                if (\Schema::hasColumn('orders','address'))      $payload['address'] = $data['alamat'];
+                if (\Schema::hasColumn('orders','address_text')) $payload['address_text'] = $data['alamat'];
 
-            // Isi alamat ke kolom yang tersedia
-            if (Schema::hasColumn('orders', 'address')) {
-                $payload['address'] = $data['alamat'];
-            }
-            if (Schema::hasColumn('orders', 'address_text')) {
-                $payload['address_text'] = $data['alamat'];
-            }
+                $order = Order::create($payload);
 
-            $order = Order::create($payload);
+                foreach ($cartItems as $ci) {
+                    $qty = (int) $ci->quantity;
 
-            foreach ($cartItems as $ci) {
-                $price = (int) ($ci->product->price ?? 0);
-                $qty   = (int) $ci->quantity;
-                OrderItem::create([
-                    'order_id'  => $order->id,
-                    'product_id'=> $ci->product_id,
-                    'price'     => $price,
-                    'quantity'  => $qty,
-                    'subtotal'  => $price * $qty,
-                ]);
-            }
+                    $product = Product::whereKey($ci->product_id)->lockForUpdate()->first();
+                    if (!$product) {
+                        throw new \RuntimeException('Produk tidak ditemukan.');
+                    }
+                    if ((int)$product->stock < $qty) {
+                        throw new \RuntimeException("Stok produk {$product->name} tidak mencukupi.");
+                    }
 
-            Cart::where('user_id', $userId)->delete();
-        });
+                    $price = (int) ($ci->product->price ?? 0);
+                    OrderItem::create([
+                        'order_id'   => $order->id,
+                        'product_id' => $product->id,
+                        'price'      => $price,
+                        'quantity'   => $qty,
+                        'subtotal'   => $price * $qty,
+                    ]);
+
+                    $product->decrement('stock', $qty);
+                }
+
+                Cart::where('user_id', $userId)->delete();
+            });
+        } catch (\Throwable $e) {
+            return redirect()->route('cart.index')->with('error', $e->getMessage());
+        }
 
         return redirect()->route('buyer.orders.index')->with('success', 'Pesanan berhasil dibuat.');
     }

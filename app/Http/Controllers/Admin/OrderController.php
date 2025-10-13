@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Product;
 
 class OrderController extends Controller
 {
@@ -37,7 +39,40 @@ class OrderController extends Controller
             'status' => 'required|in:diproses,dikirim,selesai,batal',
         ]);
 
-        $order->update($data);
+        $newStatus = $request->input('status', $order->status);
+
+        DB::transaction(function () use ($order, $newStatus) {
+            $originalStatus = $order->status;
+
+            // Ubah status
+            $order->status = $newStatus;
+
+            // Jika transisi dari selain 'batal' -> 'batal', kembalikan stok
+            if ($originalStatus !== 'batal' && $newStatus === 'batal') {
+                $order->loadMissing('items'); // product bisa null, kunci ulang per row
+                foreach ($order->items as $it) {
+                    $p = Product::whereKey($it->product_id)->lockForUpdate()->first();
+                    if ($p) {
+                        $p->increment('stock', (int) $it->quantity);
+                    }
+                }
+            }
+
+            // Opsional: jika dari 'batal' -> status lain, potong stok lagi bila tersedia
+            if ($originalStatus === 'batal' && $newStatus !== 'batal') {
+                $order->loadMissing('items');
+                foreach ($order->items as $it) {
+                    $p = Product::whereKey($it->product_id)->lockForUpdate()->first();
+                    if ($p && $p->stock >= $it->quantity) {
+                        $p->decrement('stock', (int) $it->quantity);
+                    } else {
+                        throw new \RuntimeException("Stok {$p->name} tidak cukup untuk memulihkan pesanan.");
+                    }
+                }
+            }
+
+            $order->save();
+        });
 
         return back()->with('success', 'Status pesanan diperbarui.');
     }
