@@ -12,7 +12,11 @@
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-text-input id="email" name="email" type="email"
+       value="{{ old('email') }}" required
+       pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
+       title="Masukkan email yang valid (contoh: nama@domain.com)"
+       class="block mt-1 w-full" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -22,10 +26,11 @@
             <x-input-label for="password" :value="__('Password')" />
 
             <div class="relative">
-                <input id="password" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                <input id="password" name="password" type="password" required
+       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$"
+       title="Minimal 8 karakter, ada huruf besar, huruf kecil, angka, dan simbol"
                     x-bind:type="show ? 'text' : 'password'"
-                    name="password"
-                    required autocomplete="new-password">
+                    class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
 
                 {{-- Ikon Mata untuk Show/Hide --}}
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
