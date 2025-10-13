@@ -25,7 +25,9 @@
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
+            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username"
+                pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
+                title="Masukkan email yang valid (contoh: nama@domain.com)" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
         </div>
 
@@ -49,4 +51,31 @@
             @endif
         </div>
     </form>
+
+    <p id="email-hint-profile" class="mt-1 text-xs text-gray-500">
+        Format email harus valid, contoh: nama@domain.com
+    </p>
 </section>
+
+{{-- Live validation (email) --}}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const email = document.getElementById('email');
+    const hint  = document.getElementById('email-hint-profile');
+    const reEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+    function validateEmail() {
+        if (!email || !hint) return;
+        const ok = reEmail.test((email.value || '').trim());
+        hint.classList.toggle('text-green-600', ok);
+        hint.classList.toggle('text-gray-500', !ok);
+        email.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    }
+
+    if (email) {
+        validateEmail();
+        email.addEventListener('input', validateEmail);
+        email.addEventListener('blur', validateEmail);
+    }
+});
+</script>

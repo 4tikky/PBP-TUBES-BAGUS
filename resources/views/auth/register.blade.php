@@ -9,7 +9,7 @@
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
-        <!-- Email Address -->
+        {{-- Email --}}
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email"
@@ -18,6 +18,9 @@
        title="Masukkan email yang valid (contoh: nama@domain.com)"
        class="block mt-1 w-full" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <p id="email-hint" class="mt-1 text-xs text-gray-500">
+                Format email harus valid, contoh: nama@domain.com
+            </p>
         </div>
 
         <!-- Password -->
@@ -66,6 +69,114 @@
                 </div>
             </div>
         </div>
+
+        {{-- Checklist ketentuan password (live) --}}
+        <div class="mt-2 text-xs">
+            <ul class="space-y-1">
+                <li id="pw-length"  class="flex items-center gap-2 text-gray-500">
+                    <span class="w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600">•</span>
+                    Minimal 8 karakter
+                </li>
+                <li id="pw-lower"   class="flex items-center gap-2 text-gray-500">
+                    <span class="w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600">•</span>
+                    Mengandung huruf kecil
+                </li>
+                <li id="pw-upper"   class="flex items-center gap-2 text-gray-500">
+                    <span class="w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600">•</span>
+                    Mengandung huruf besar
+                </li>
+                <li id="pw-number"  class="flex items-center gap-2 text-gray-500">
+                    <span class="w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600">•</span>
+                    Mengandung angka
+                </li>
+                <li id="pw-symbol"  class="flex items-center gap-2 text-gray-500">
+                    <span class="w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600">•</span>
+                    Mengandung simbol
+                </li>
+                <li id="pw-match"   class="flex items-center gap-2 text-gray-500">
+                    <span class="w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600">•</span>
+                    Konfirmasi password sama
+                </li>
+            </ul>
+        </div>
+
+        {{-- Script validasi live (tidak mengganggu backend validation) --}}
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const email   = document.getElementById('email');
+            const pw      = document.getElementById('password');
+            const pw2     = document.getElementById('password_confirmation');
+
+            const emailHint = document.getElementById('email-hint');
+
+            const el = {
+                length:  document.getElementById('pw-length'),
+                lower:   document.getElementById('pw-lower'),
+                upper:   document.getElementById('pw-upper'),
+                number:  document.getElementById('pw-number'),
+                symbol:  document.getElementById('pw-symbol'),
+                match:   document.getElementById('pw-match'),
+            };
+
+            const re = {
+                email:  /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+                lower:  /[a-z]/,
+                upper:  /[A-Z]/,
+                number: /\d/,
+                symbol: /[^A-Za-z0-9]/,
+            };
+
+            function setState(li, ok) {
+                if (!li) return;
+                const dot = li.querySelector('span');
+                if (ok) {
+                    li.classList.remove('text-gray-500');
+                    li.classList.add('text-green-600');
+                    if (dot) { dot.textContent = '✓'; dot.className = 'w-4 h-4 inline-flex items-center justify-center rounded-full bg-green-100 text-green-700'; }
+                } else {
+                    li.classList.remove('text-green-600');
+                    li.classList.add('text-gray-500');
+                    if (dot) { dot.textContent = '•'; dot.className = 'w-4 h-4 inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600'; }
+                }
+            }
+
+            function validateEmail() {
+                const ok = re.email.test(email.value.trim());
+                emailHint.classList.toggle('text-green-600', ok);
+                emailHint.classList.toggle('text-gray-500', !ok);
+                email.setAttribute('aria-invalid', ok ? 'false' : 'true');
+            }
+
+            function validatePassword() {
+                const v = pw.value || '';
+                setState(el.length, v.length >= 8);
+                setState(el.lower,  re.lower.test(v));
+                setState(el.upper,  re.upper.test(v));
+                setState(el.number, re.number.test(v));
+                setState(el.symbol, re.symbol.test(v));
+
+                const same = v.length > 0 && v === (pw2.value || '');
+                setState(el.match, same);
+            }
+
+            function validatePasswordMatch() {
+                const same = (pw.value || '') === (pw2.value || '') && pw2.value.length > 0;
+                setState(el.match, same);
+            }
+
+            if (email) {
+                validateEmail();
+                email.addEventListener('input', validateEmail);
+            }
+            if (pw) {
+                validatePassword();
+                pw.addEventListener('input', validatePassword);
+            }
+            if (pw2) {
+                pw2.addEventListener('input', validatePasswordMatch);
+            }
+        });
+        </script>
 
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md" href="{{ route('login') }}">
