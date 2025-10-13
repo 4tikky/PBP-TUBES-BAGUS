@@ -51,12 +51,13 @@
                         
                         <div class="mt-4">
                             <label for="image" class="block font-medium text-sm text-gray-700">Foto Produk</label>
-                            <input id="image" name="image" type="file" class="block mt-1 w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-full file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-blue-50 file:text-blue-700
-                                hover:file:bg-blue-100" />
+                            <input id="image" name="image" type="file" accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+    class="block mt-1 w-full text-sm text-gray-500
+        file:mr-4 file:py-2 file:px-4
+        file:rounded-full file:border-0
+        file:text-sm file:font-semibold
+        file:bg-blue-50 file:text-blue-700
+        hover:file:bg-blue-100" />
                         </div>
                         <div class="flex items-center justify-end mt-4">
                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">

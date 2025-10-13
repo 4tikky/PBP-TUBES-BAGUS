@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -14,8 +13,19 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('user')->latest()->paginate(15);
+        $orders = Order::with(['user'])->withCount('items')->latest()->paginate(15);
+
         return view('admin.orders.index', compact('orders'));
+    }
+
+    /**
+     * Menampilkan detail pesanan.
+     */
+    public function show(Order $order)
+    {
+        $order->load(['user', 'items.product']);
+
+        return view('admin.orders.show', compact('order'));
     }
 
     /**
@@ -23,12 +33,12 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-        $request->validate([
-            'status' => ['required', Rule::in(['diproses', 'dikirim', 'selesai', 'batal'])],
+        $data = $request->validate([
+            'status' => 'required|in:diproses,dikirim,selesai,batal',
         ]);
 
-        $order->update(['status' => $request->status]);
+        $order->update($data);
 
-        return back()->with('success', "Status Pesanan #{$order->id} berhasil diperbarui!");
+        return back()->with('success', 'Status pesanan diperbarui.');
     }
 }
