@@ -27,4 +27,12 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    
+    /**
+     * Relasi ke model OrderItem.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

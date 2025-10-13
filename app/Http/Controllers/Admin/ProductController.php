@@ -130,7 +130,23 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->delete();
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus!');
+        try {
+            // Hapus order_items terkait terlebih dahulu
+            $product->orderItems()->delete();
+            
+            // Hapus gambar jika ada
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            
+            // Hapus produk
+            $product->delete();
+
+            return redirect()->route('admin.products.index')
+                ->with('success', 'Produk berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.products.index')
+                ->with('error', 'Gagal menghapus produk: ' . $e->getMessage());
+        }
     }
 }
