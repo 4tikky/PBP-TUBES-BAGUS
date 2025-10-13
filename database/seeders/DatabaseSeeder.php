@@ -13,16 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-        Category::create(['name' => 'Nama Kategori']);
-
+        // Eloquent seeders (default)
         $this->call([
             CategorySeeder::class,
+            ProductSeeder::class,
+            UserSeeder::class,
         ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Jalankan jika kamu menyediakan dump data lengkap (opsional)
+        // $this->call(SqlDataSeeder::class);
     }
 }

@@ -12,9 +12,9 @@ class CategorySeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        $categories = ['Sembako', 'Jajanan', 'Minuman','Kerajinan'];
+        $categories = ['Sembako', 'Jajanan', 'Minuman', 'Kerajinan'];
 
         foreach ($categories as $name) {
             Category::firstOrCreate(['name' => $name]);
