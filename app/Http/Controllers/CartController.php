@@ -24,22 +24,36 @@ class CartController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function add(Request $request)
+    public function add(Request $request, \App\Models\Product $product)
     {
-        $data = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'nullable|integer|min:1'
-        ]);
-        $qty = $data['quantity'] ?? 1;
+        if (auth()->check() && auth()->user()->role === 'admin') {
+            return back()->with('error', 'Admin tidak dapat menambahkan keranjang.');
+        }
 
-        $existing = Cart::firstOrNew([
+        $qtyReq    = max(1, (int) $request->input('quantity', 1));
+        $available = (int) $product->stock;
+
+        if ($available <= 0) {
+            return back()->with('error', 'Stok produk habis.');
+        }
+
+        $cart = \App\Models\Cart::firstOrNew([
             'user_id' => auth()->id(),
-            'product_id' => $data['product_id'],
+            'product_id' => $product->id,
         ]);
-        $existing->quantity = ($existing->exists ? $existing->quantity : 0) + $qty;
-        $existing->save();
 
-        return redirect()->route('cart.index')->with('success', 'Produk ditambahkan ke keranjang');
+        $current = (int) ($cart->exists ? $cart->quantity : 0);
+        $newQty  = min($available, $current + $qtyReq);
+
+        if ($newQty === $current) {
+            return back()->with('error', 'Jumlah melebihi stok yang tersedia.');
+        }
+
+        $cart->quantity = $newQty;
+        $cart->save();
+
+        // Tetap di halaman yang sama dengan notifikasi sukses
+        return back()->with('success', 'Ditambahkan ke keranjang.');
     }
 
     /**
@@ -48,12 +62,21 @@ class CartController extends Controller
      * @param  Cart  $cart
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Cart $cart)
+    public function update(Request $request, Cart $item)
     {
-        if ($cart->user_id !== auth()->id()) abort(403);
-        $data = $request->validate(['quantity' => 'required|integer|min:1']);
-        $cart->update(['quantity' => $data['quantity']]);
-        return back()->with('success', 'Jumlah diperbarui');
+        $qtyReq = max(1, (int) $request->input('quantity', 1));
+        $available = (int) ($item->product->stock ?? 0);
+
+        if ($available <= 0) {
+            $item->delete();
+            return back()->with('error', 'Stok produk habis, item dihapus dari keranjang.');
+        }
+
+        $newQty = min($available, $qtyReq);
+        $item->update(['quantity' => $newQty]);
+
+        $msg = $newQty < $qtyReq ? 'Jumlah dibatasi sesuai stok.' : 'Jumlah diperbarui.';
+        return back()->with('success', $msg);
     }
 
     /**

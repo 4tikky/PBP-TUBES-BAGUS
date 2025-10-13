@@ -8,7 +8,7 @@
         </div>
     </x-slot>
 
-    {{-- Main Content Wrapper --}}
+    {{--  Main Content Wrapper --}}
     <div class="p-4 sm:p-6 lg:p-8">
         {{-- Success Message --}}
         @if (session('success'))
@@ -35,7 +35,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-500">Total Pesanan</p>
-                        <p class="text-2xl font-bold text-blue-600 mt-1">{{ $totalOrders }}</p>
+                        <p class="text-2xl font-bold text-blue-600 mt-1">{{ $totalOrders ?? 0 }}</p>
                     </div>
                     <div class="bg-blue-100 p-3 rounded-full"><i class="fas fa-shopping-cart text-blue-600 text-xl"></i></div>
                 </div>
@@ -117,9 +117,51 @@
                 </ul>
             </div>
         </div>
+
+        <!-- {{-- Tambah: Distribusi Kategori --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            <div class="bg-white rounded-xl shadow p-5 lg:col-span-2">
+                <h3 class="text-lg font-semibold text-gray-900">Distribusi Kategori (Jumlah Produk)</h3>
+                <div class="mt-4">
+                    <canvas id="catChart" height="110"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-5">
+                <h3 class="text-lg font-semibold text-gray-900">Ringkasan Kategori</h3>
+                <div class="mt-4 space-y-3 max-h-80 overflow-auto pr-1">
+                    @forelse(($catLabels ?? collect()) as $i => $label)
+                        <div class="flex items-center justify-between rounded-md border border-gray-200 p-3">
+                            <span class="text-sm text-gray-700">{{ $label }}</span>
+                            <span class="text-sm font-semibold text-gray-900">{{ $catData[$i] ?? 0 }}</span>
+                        </div>
+                    @empty
+                        <div class="text-sm text-gray-500">Belum ada kategori/produk.</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- JavaScript untuk Interaktivitas --}}
+    {{-- Tambah: Chart.js CDN + inisialisasi pie chart (tidak mengubah script lama) --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+    <script>
+        (function(){
+            const labels = @json($catLabels ?? []);
+            const data   = @json($catData ?? []);
+            const el = document.getElementById('catChart');
+            if (!el || !labels.length) return;
+
+            const colors = labels.map((_, i) => `hsl(${Math.floor((360/Math.max(labels.length,1))*i)},70%,55%)`);
+            new Chart(el, {
+                type: 'pie',
+                data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#fff', borderWidth: 2 }] },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        })();
+    </script> -->
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Sales Chart (Line Chart)
