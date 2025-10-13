@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -98,27 +99,27 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, \App\Models\Product $product)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'price'       => 'required|numeric|min:0',
+            'stock'       => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // tambahkan validasi image
+            'image'       => 'nullable|image|max:2048', // jpg,png,webp,svg dsb
+            // 'description' => 'nullable|string',
         ]);
 
-        // Update data selain gambar
-        $product->update($request->only(['name', 'price', 'stock', 'category_id']));
-
-        // Jika ada gambar baru di-upload
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $product->image = $path;
-            $product->save(); // <-- WAJIB agar path gambar tersimpan!
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $validated['image'] = $request->file('image')->store('products', 'public'); // simpan ke storage/app/public/products
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
+        $product->update($validated);
+
+        return redirect()->route('admin.products.edit', $product)->with('success', 'Produk diperbarui.');
     }
 
     /**
