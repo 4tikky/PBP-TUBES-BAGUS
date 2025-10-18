@@ -11,21 +11,25 @@
         
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4" x-data="{ show: false }">
-            <x-input-label for="password" :value="__('Password')" />
-            
-            <div class="relative">
-                <input id="password"
-                    class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                    x-bind:type="show ? 'text' : 'password'"
-                    name="password"
-                    required autocomplete="current-password">
+            <label for="email" class="block text-sm font-medium text-gray-800 dark:text-gray-200">
+                {{ __('Email') }}
+            </label>
+             <x-text-input id="email" class="block mt-1 w-full text-gray-900 placeholder-gray-500 bg-white" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+         </div>
+ 
+         <!-- Password -->
+         <div class="mt-4" x-data="{ show: false }">
+            <label for="password" class="block text-sm font-medium text-gray-800 dark:text-gray-200">
+                {{ __('Password') }}
+            </label>
+             
+             <div class="relative">
+                 <input id="password"
+                     class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-gray-900 placeholder-gray-500 bg-white"
+                     x-bind:type="show ? 'text' : 'password'"
+                     name="password"
+                     required autocomplete="current-password">
                     
                 {{-- Ikon Mata untuk Show/Hide --}}
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
@@ -46,7 +50,7 @@
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
+                <span class="ml-2 text-sm text-gray-800 dark:text-gray-400">{{ __('Remember me') }}</span>
             </label>
         </div>
 

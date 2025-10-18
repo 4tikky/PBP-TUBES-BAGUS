@@ -1,9 +1,8 @@
-<section>
+<section class="p-6 bg-white shadow-md rounded-lg">
     <header>
         <h2 class="text-lg font-medium text-gray-900">
             {{ __('Profile Information') }}
         </h2>
-
         <p class="mt-1 text-sm text-gray-600">
             {{ __("Update your account's profile information and email address.") }}
         </p>
@@ -18,28 +17,28 @@
         @method('patch')
 
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <x-input-label for="name" :value="__('Name')" class="text-black" /> 
+            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username"
+            <x-input-label for="email" :value="__('Email')" class="text-black" /> 
+            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :value="old('email', $user->email)" required autocomplete="username"
                 pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
                 title="Masukkan email yang valid (contoh: nama@domain.com)" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
         </div>
 
         <div>
-            <x-input-label for="phone" :value="__('Nomor Telepon')" />
-            <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" />
+            <x-input-label for="phone" :value="__('Nomor Telepon')" class="text-black" /> 
+            <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :value="old('phone', $user->phone)" autocomplete="tel" />
             <x-input-error class="mt-2" :messages="$errors->get('phone')" />
         </div>
 
         <div>
-            <x-input-label for="address" :value="__('Alamat')" />
-            <textarea id="address" name="address" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('address', $user->address) }}</textarea>
+            <x-input-label for="address" :value="__('Alamat')" class="text-black" /> 
+            <textarea id="address" name="address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('address', $user->address) }}</textarea>
             <x-input-error class="mt-2" :messages="$errors->get('address')" />
         </div>
 
