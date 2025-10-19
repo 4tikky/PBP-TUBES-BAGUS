@@ -3,6 +3,7 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
         body.checkout-body { font-family: 'Poppins', sans-serif; background-color: #f4f7f9; color: #333; margin: 0; padding: 24px; }
         .container { max-width: 1000px; margin: auto; }
         .checkout-header { font-size: 28px; font-weight: 600; margin-bottom: 24px; color: #1a202c; text-align: center; }
@@ -20,15 +21,28 @@
         .summary-total { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; }
         .place-order-btn { background-color: #0d6efd; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.3s; margin-top: 24px; }
         .place-order-btn:hover { background-color: #0b5ed7; }
+        .summary-item-list { border-bottom: 1px solid #e0e0e0; margin-bottom: 16px; padding-bottom: 8px; max-height: 200px; overflow-y: auto; }
+        .summary-product { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .summary-product img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid #eee; }
+        .summary-product-details { flex: 1; }
+        .summary-product-name { font-weight: 500; font-size: 15px; }
+        .summary-product-qty { font-size: 14px; color: #666; }
+        .summary-product-price { font-weight: 500; font-size: 15px; }
+        .payment-methods { display: flex; gap: 10px; margin-bottom: 16px; }
+        .payment-method { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; font-weight: 500; }
+        .payment-method input[type="radio"] { display: none; }
+        .payment-method.selected { border-color: #0d6efd; background-color: #f0f6ff; box-shadow: 0 0 5px rgba(13,110,253,0.3); }
+        .payment-method:not(.selected):hover { background-color: #f9f9f9; }
+
         @media (max-width: 768px) { .checkout-layout { flex-direction: column; } .order-summary { position: static; width: 100%; box-sizing: border-box; } }
     </style>
 
     <div class="container checkout-body">
-        <h1 class="checkout-header">📦 Checkout</h1>
+        <h1 class="checkout-header"> Checkout</h1>
 
         <div class="checkout-layout">
             <div class="customer-details">
-                <h2 class="form-section-title">Informasi Kontak & Pengiriman</h2>
+                <h2 class="form-section-title">Informasi Pengiriman</h2>
 
                 <form id="checkout-form" action="{{ route('checkout.store') }}" method="POST">
                     @csrf
@@ -53,7 +67,25 @@
                         <textarea id="alamat" name="alamat" placeholder="Masukkan nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan" required>{{ old('alamat') }}</textarea>
                     </div>
 
-                    <h2 class="form-section-title" style="margin-top: 24px;">Metode Pengiriman</h2>
+                    <h2 class="form-section-title" style="margin-top: 24px;">Catatan Pengiriman</h2>
+                    <div class="form-group">
+                        <label for="catatan">Catatan</label>
+                        <textarea id="catatan" name="catatan" placeholder="Opsional, misal patokan atau instruksi kurir">{{ old('catatan') }}</textarea>
+                    </div>
+                    
+                    <h2 class="form-section-title" style="margin-top: 24px;">Metode Pembayaran</h2>
+                    <div class="payment-methods">
+                        <label class="payment-method selected" for="payment-cod">
+                            <input type="radio" id="payment-cod" name="payment_method" value="cod" checked>
+                            Bayar di Tempat (COD)
+                        </label>
+                        <label class="payment-method" for="payment-transfer">
+                            <input type="radio" id="payment-transfer" name="payment_method" value="transfer">
+                            Transfer Bank
+                        </label>
+                    </div>
+
+                    <h2 class="form-section-title" style="margin-top: 24px;">Opsi Pengiriman</h2>
                     <div class="form-group">
                         <label for="pengiriman">Pilih Jasa Pengiriman</label>
                         <select id="pengiriman" name="pengiriman">
@@ -63,7 +95,7 @@
                         </select>
                     </div>
 
-                    {{-- Hidden totals for server processing --}}
+                    {{-- Hidden totals for server processing (TIDAK BERUBAH) --}}
                     <input type="hidden" id="subtotal-input" name="subtotal" value="{{ $subtotal }}">
                     <input type="hidden" id="shipping-input" name="shipping_cost" value="10000">
                     <input type="hidden" id="total-input" name="total" value="{{ $subtotal + 10000 }}">
@@ -73,6 +105,25 @@
             <div class="order-summary">
                 <h2 class="summary-title">Ringkasan Pesanan</h2>
 
+                <div class="summary-item-list">
+                    {{-- Asumsi $items adalah collection dan setiap $item punya relasi 'product' --}}
+                    @forelse ($items as $item)
+                        <div class="summary-product">
+                            {{-- Ganti 'image_url' dengan path gambar produk Anda --}}
+                            <img src="{{ $item->product->image_url ?? 'https://via.placeholder.com/50' }}" alt="{{ $item->product->name ?? 'Produk' }}">
+                            <div class="summary-product-details">
+                                <div class="summary-product-name">{{ $item->product->name ?? 'Nama Produk' }}</div>
+                                {{-- Ganti 'price' dengan atribut harga produk Anda --}}
+                                <div class="summary-product-qty">Rp {{ number_format($item->product->price ?? $item->price, 0, ',', '.') }} x {{ $item->quantity }}</div>
+                            </div>
+                            <div class="summary-product-price">
+                                Rp {{ number_format(($item->product->price ?? $item->price) * $item->quantity, 0, ',', '.') }}
+                            </div>
+                        </div>
+                    @empty
+                        <p>Tidak ada item di keranjang.</p>
+                    @endforelse
+                </div>
                 <div class="summary-item">
                     <span>Subtotal ({{ $items->sum('quantity') }} item)</span>
                     <span id="subtotal-amount" data-value="{{ $subtotal }}">
@@ -81,7 +132,7 @@
                 </div>
 
                 <div class="summary-item">
-                    <span>Biaya Pengiriman</span>
+                    <span>Ongkir</span>
                     <span id="shipping-cost">Rp 10.000</span>
                 </div>
 
@@ -92,7 +143,11 @@
                     </span>
                 </div>
 
-                <button class="place-order-btn" type="submit" form="checkout-form">Buat Pesanan & Bayar</button>
+                <button class="place-order-btn" type="submit" form="checkout-form">Konfirmasi Pesanan</button>
+
+                <p style="font-size: 14px; color: #666; text-align: center; margin-top: 16px;">
+                    Pilih "Transfer Bank" untuk menerima virtual account dan menyelesaikan pembayaran secara mandiri.
+                </p>
             </div>
         </div>
     </div>
@@ -121,13 +176,20 @@
             shippingCostElement.textContent = formatRupiah(shippingCost);
             totalPaymentElement.textContent = formatRupiah(total);
 
-            // sync hidden inputs for server
             shippingInput.value = shippingCost;
             totalInput.value = total;
         }
 
         shippingSelect.addEventListener('change', updateSummary);
-        // initial sync
         updateSummary();
+
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        paymentMethods.forEach(method => {
+            method.addEventListener('click', () => {
+                paymentMethods.forEach(m => m.classList.remove('selected'));
+                method.classList.add('selected');
+                method.querySelector('input[type="radio"]').checked = true;
+            });
+        });
     </script>
 </x-app-layout>
